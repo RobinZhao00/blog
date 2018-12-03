@@ -152,6 +152,167 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-解析url" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/解析url/">解析url</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/解析url/" class="archive-article-date">
+  	<time datetime="2018-12-03T01:42:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>需求</strong>：请求某些后端的接口，需要前端提供一些特定的请求参数。</p>
+<p><strong>注意事项</strong>：</p>
+<blockquote>
+<p>1.解析的是否为普通的url （有时候也会解析带hash的url）。</p>
+</blockquote>
+<blockquote>
+<p>2.url 中是否有空格等字符串</p>
+</blockquote>
+<p><strong>知识罗列</strong>：</p>
+<blockquote>
+<p>1.数组的扁平化处理</p>
+</blockquote>
+<blockquote>
+<p>2.正则匹配</p>
+</blockquote>
+<blockquote>
+<p>3.模板字符串拼接</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> $input = $(<span class="string">".input"</span>);</span><br><span class="line">  <span class="keyword">const</span> $queriesContainer = $(<span class="string">".queries-container"</span>);</span><br><span class="line">  <span class="keyword">const</span> testUrl = <span class="string">"url"</span>;</span><br><span class="line">  <span class="keyword">const</span> trimUrl = <span class="function"><span class="params">str</span> =&gt;</span> str.replace(<span class="regexp">/\s+/g</span>, <span class="string">""</span>);</span><br><span class="line">  <span class="keyword">const</span> getUrlQueries = <span class="function"><span class="params">u</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 去除url 中的空格</span></span><br><span class="line">    <span class="keyword">const</span> url = trimUrl(u);</span><br><span class="line">    <span class="keyword">if</span> (!(url &amp;&amp; url.includes(<span class="string">"?"</span>))) <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">const</span> startPoint = url.indexOf(<span class="string">"?"</span>) + <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 注意React使用hash router</span></span><br><span class="line">    <span class="keyword">const</span> endPoint = url.indexOf(<span class="string">"#"</span>) &gt; <span class="number">-1</span> ? url.indexOf(<span class="string">"#"</span>) : url.length + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">const</span> urlSegment = url.slice(startPoint, endPoint);</span><br><span class="line">    <span class="keyword">return</span> urlSegment.split(<span class="string">"&amp;"</span>).reduce(<span class="function">(<span class="params">result, item</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> tmp = item.split(<span class="string">"="</span>);</span><br><span class="line">      result[tmp[<span class="number">0</span>]] = tmp[<span class="number">1</span>];</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">    &#125;, &#123;&#125;);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> renderUrlQueries = <span class="function"><span class="params">queries</span> =&gt;</span></span><br><span class="line">    <span class="built_in">Object</span>.entries(queries).reduce(<span class="function">(<span class="params">result, item, currentIndex</span>) =&gt;</span> &#123;</span><br><span class="line">      result += <span class="string">`&lt;li class="list-query"&gt;<span class="subst">$&#123;currentIndex +</span></span></span><br><span class="line"><span class="string"><span class="subst">        <span class="number">1</span>&#125;</span>.&amp;nbsp;&amp;nbsp;&lt;span class="key"&gt;<span class="subst">$&#123;</span></span></span><br><span class="line"><span class="string"><span class="subst">        item[<span class="number">0</span>]</span></span></span><br><span class="line"><span class="string"><span class="subst">      &#125;</span>&lt;/span&gt; : &lt;span class="value"&gt;<span class="subst">$&#123;item[<span class="number">1</span>]&#125;</span>&lt;/span&gt;&lt;/li&gt;`</span>;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">    &#125;, <span class="string">""</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> getRender = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> url = $input.val();</span><br><span class="line">    <span class="keyword">const</span> queries = getUrlQueries(url);</span><br><span class="line">    $queriesContainer.html(renderUrlQueries(queries));</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> init = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    $input.val(testUrl);</span><br><span class="line">    getRender();</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  init();</span><br><span class="line"></span><br><span class="line">  $input.on(<span class="string">"input"</span>, () =&gt; getRender());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><a href="https://codepen.io/littlefishzhao/pen/xJMMmW" target="_blank" rel="noopener">在线demo</a></p>
+<p><strong>不足</strong>：</p>
+<blockquote>
+<p>1.场景考虑的不够充分。</p>
+</blockquote>
+<blockquote>
+<p>2.没有完全使用ES6(indexOf-&gt;includes).</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/解析url/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-图片的处理" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/图片的处理/">图片的处理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/图片的处理/" class="archive-article-date">
+  	<time datetime="2018-12-03T01:23:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>需求背景</strong></p>
+<blockquote>
+<p>需要从服务器读取图片到页面(图片大小未知)，或者上传图片到服务器(图片体积过大，需要压缩) ，此外后端可能能对post请求有设置。</p>
+</blockquote>
+<p><strong>知识罗列</strong>：</p>
+<blockquote>
+<p>1.从URL 读取图片信息<br>2.从本地上传图片<br>3.前端图片压缩<br>4.canvas 压缩图片的处理<br>5.base64转Blob</p>
+</blockquote>
+<p><strong>Talk is cheap, show me your code</strong><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line">handleChange = <span class="keyword">async</span> (e, compressRatio = <span class="number">0.5</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> file = e.target.files[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">const</span> &#123; base64file, paddingTop &#125; = <span class="keyword">await</span> handleFile(file);</span><br><span class="line">  <span class="keyword">const</span> &#123; compressedBase64File &#125; = <span class="keyword">await</span> handleCompressFile(</span><br><span class="line">    file,</span><br><span class="line">    compressRatio</span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">const</span> origin = base64toBlob(base64file);</span><br><span class="line">  <span class="keyword">const</span> compress = base64toBlob(compressedBase64File);</span><br><span class="line">  <span class="keyword">const</span> originSize = (origin.size / <span class="number">1000</span>).toFixed(<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">const</span> compressSize = (compress.size / <span class="number">1000</span>).toFixed(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> compressRate = <span class="string">`<span class="subst">$&#123;(</span></span></span><br><span class="line"><span class="string"><span class="subst">    (originSize - compressSize) <span class="regexp">/</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    originSize *</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    100</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  ).toFixed(2)&#125;%`;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp"></span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  return &#123;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    originStyle: &#123;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">      backgroundImage: `url($&#123;base64file&#125;)`,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">      paddingTop</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    &#125;,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    compressStyle: &#123;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">      backgroundImage: `url($&#123;compressedBase64File&#125;)`,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">      paddingTop</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    &#125;,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    originSize,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    compressSize,</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">    compressRate</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  &#125;;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">&#125;;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp"></span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">/</span><span class="regexp">/ 获取原始图片信息</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">handleFile = async file =&gt; &#123;</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  const &#123; originFile, base64file, originSize &#125; = await getBase64File(file);</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  const &#123; width, height &#125; = await getImageParams(base64file);</span></span></span></span><br><span class="line"><span class="string"><span class="subst"><span class="regexp">  const paddingTop = `$&#123;height /</span> width * <span class="number">100</span>&#125;</span>%`</span>;</span><br><span class="line">  <span class="keyword">return</span> &#123; originFile, base64file, originSize, width, height, paddingTop &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取压缩图片信息</span></span><br><span class="line">handleCompressFile = <span class="keyword">async</span> (file, compressRatio) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; base64file &#125; = <span class="keyword">await</span> getBase64File(file);</span><br><span class="line">  <span class="keyword">const</span> &#123; width, height &#125; = <span class="keyword">await</span> getImageParams(base64file);</span><br><span class="line">  <span class="keyword">const</span> targetWidth = width * compressRatio;</span><br><span class="line">  <span class="keyword">const</span> targetHeight = height * compressRatio;</span><br><span class="line">  <span class="comment">// 创建Image 对象</span></span><br><span class="line">  <span class="keyword">const</span> image = <span class="keyword">new</span> Image();</span><br><span class="line">  image.src = base64file;</span><br><span class="line">  <span class="comment">// 创建画布</span></span><br><span class="line">  <span class="keyword">const</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">"canvas"</span>);</span><br><span class="line">  <span class="keyword">const</span> context = canvas.getContext(<span class="string">"2d"</span>);</span><br><span class="line">  canvas.width = targetWidth;</span><br><span class="line">  canvas.height = targetHeight;</span><br><span class="line"></span><br><span class="line">  context.fillStyle = <span class="string">"rgba(255,255,255,1)"</span>;</span><br><span class="line">  context.fillRect(<span class="number">0</span>, <span class="number">0</span>, targetWidth, targetHeight);</span><br><span class="line">  context.drawImage(image, <span class="number">0</span>, <span class="number">0</span>, targetWidth, targetHeight);</span><br><span class="line">  <span class="keyword">const</span> compressedBase64File = canvas.toDataURL(<span class="string">"image/jpeg"</span>, compressRatio);</span><br><span class="line">  <span class="keyword">return</span> &#123; compressedBase64File &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// file 2 base64</span></span><br><span class="line">getBase64File = <span class="function"><span class="params">file</span> =&gt;</span></span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> reader = <span class="keyword">new</span> FileReader();</span><br><span class="line">  <span class="keyword">const</span> result = &#123;&#125;;</span><br><span class="line">  reader.readAsDataURL(file);</span><br><span class="line">  reader.onload = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    result.base64file = reader.result;</span><br><span class="line">    result.originFile = file;</span><br><span class="line">    result.originSize = file.size;</span><br><span class="line">    resolve(result);</span><br><span class="line">  &#125;;</span><br><span class="line">  reader.onerror = <span class="function"><span class="params">error</span> =&gt;</span> reject(error);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过base64file获取图像尺寸（把base64file换成图片的url,即可通过url获取图片信息，常用来加载cdn的未知图片）</span></span><br><span class="line">getImageParams = <span class="function"><span class="params">base64file</span> =&gt;</span></span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> image = <span class="keyword">new</span> Image();</span><br><span class="line">  image.src = base64file;</span><br><span class="line">  image.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> width = <span class="keyword">this</span>.width;</span><br><span class="line">    <span class="keyword">const</span> height = <span class="keyword">this</span>.height;</span><br><span class="line">    resolve(&#123; width, height &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  image.onerror = <span class="function"><span class="params">error</span> =&gt;</span> reject(error);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 由于后端post请求的限制 ，可以根据具体情况确定是否 需要把 base64转为 blob</span></span><br><span class="line">base64toBlob = <span class="function">(<span class="params">base64file, contentType = <span class="string">"image/jpg"</span>, sliceSize = <span class="number">512</span></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 参考 https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript</span></span><br><span class="line">  <span class="keyword">const</span> byteCharacters = atob(base64file.split(<span class="string">","</span>)[<span class="number">1</span>]);</span><br><span class="line">  <span class="keyword">const</span> byteArrays = [];</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> offset = <span class="number">0</span>; offset &lt; byteCharacters.length; offset += sliceSize) &#123;</span><br><span class="line">    <span class="keyword">const</span> slice = byteCharacters.slice(offset, offset + sliceSize);</span><br><span class="line">    <span class="keyword">const</span> byteNumbers = <span class="keyword">new</span> <span class="built_in">Array</span>(slice.length);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; slice.length; i += <span class="number">1</span>) &#123;</span><br><span class="line">      byteNumbers[i] = slice.charCodeAt(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> byteArray = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(byteNumbers);</span><br><span class="line">    byteArrays.push(byteArray);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> Blob(byteArrays, &#123; <span class="attr">type</span>: contentType &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  $(<span class="string">"#file"</span>).on(<span class="string">"change"</span>, <span class="keyword">async</span> <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">      originStyle,</span><br><span class="line">      compressStyle,</span><br><span class="line">      originSize,</span><br><span class="line">      compressSize,</span><br><span class="line">      compressRate</span><br><span class="line">    &#125; = <span class="keyword">await</span> handleChange(e);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 原始图片预览</span></span><br><span class="line">    $(<span class="string">".origin"</span>).css(&#123;</span><br><span class="line">      <span class="string">"padding-top"</span>: originStyle.paddingTop,</span><br><span class="line">      <span class="string">"background-image"</span>: originStyle.backgroundImage</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// 压缩图片</span></span><br><span class="line">    $(<span class="string">".compress"</span>).css(&#123;</span><br><span class="line">      <span class="string">"padding-top"</span>: compressStyle.paddingTop,</span><br><span class="line">      <span class="string">"background-image"</span>: compressStyle.backgroundImage</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 信息展示</span></span><br><span class="line">    $(<span class="string">".massage"</span>).html(<span class="string">`</span></span><br><span class="line"><span class="string">&lt;div&gt;原始图片大小：<span class="subst">$&#123;originSize&#125;</span>k&lt;/div&gt;</span></span><br><span class="line"><span class="string">&lt;div&gt;压缩图片大小：<span class="subst">$&#123;compressSize&#125;</span>k&lt;/div&gt;</span></span><br><span class="line"><span class="string">&lt;div&gt;压缩比：<span class="subst">$&#123;compressRate&#125;</span>&lt;/div&gt;</span></span><br><span class="line"><span class="string">`</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://codepen.io/littlefishzhao/pen/djQeKm" target="_blank" rel="noopener">在线demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/图片的处理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-小程序api的promisefy" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
