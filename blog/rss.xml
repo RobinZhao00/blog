@@ -4,7 +4,7 @@
         <title>小马达的部落格 Blog</title>
         <link>https://github.com/blog</link>
         <description>小马达的部落格 Blog</description>
-        <lastBuildDate>Thu, 04 Jul 2024 01:45:38 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 04 Jul 2024 01:49:32 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
@@ -12,7 +12,7 @@
             <title><![CDATA[index]]></title>
             <link>https://github.com/blog/index</link>
             <guid>https://github.com/blog/index</guid>
-            <pubDate>Thu, 04 Jul 2024 01:45:38 GMT</pubDate>
+            <pubDate>Thu, 04 Jul 2024 01:49:32 GMT</pubDate>
             <description><![CDATA[hello]]></description>
             <content:encoded><![CDATA[<p>hello</p>]]></content:encoded>
         </item>
